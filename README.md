@@ -17,7 +17,7 @@ during combat. The program repeats a scripted set of actions, as seen in the `ac
 *The goal of the program is to save time for players, considering the grindy nature of the game.*
 
 ## How To Use
-1. Download, unzip, and run the latest `gbfr_auto_pilot_vX.X.jar` program. It can be found under the "**releases**" section on the right, along with release notes.
+1. Download, unzip, and run the latest `gbfr_auto_pilot_vX.X.jar` program. It can be found under the [**releases**](https://github.com/Giga-D-Y/gbfr_auto_pilot/releases) section, along with release notes.
 2. Run the game and press the "**Start AFK Farm**" button on the program's user interface to engage the program. Move your mouse while the program is running to disengage.
    - **[Recommended]** Capture the `mission result pixel` and the `health bar pixel`, following the instructions on the user interface.
      - The `mission result pixel` allows the program to detect the game state (in-combat vs in-mission-result) which is used to reliably remove the 10-mission auto repeat limit.
