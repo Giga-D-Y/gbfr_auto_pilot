@@ -19,12 +19,13 @@ The goal of the program is to save time for players, considering the grindy natu
 ## How to use
 // TODO
 
-## Releases
+## Major Releases
 
 ### V2.4 - 2024-03-10
 // TODO
 
 ### V2.2 - 2024-03-03
+
 ##### New Features
 - Auto drink potions.
 - Added UI to capture health bar pixel for indicating where the health bar is.
