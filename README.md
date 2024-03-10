@@ -32,5 +32,16 @@ during combat. The program repeats a scripted set of actions, as seen in the `ac
 > [!CAUTION]
 > When the program is running, do not focus a window that is not the intended game, without first disengaging the program. Doing so may cause unwanted results, since the program continuously sends native mouse clicks and keyboard strokes to your operating system while engaged.
 
+## Backlogged Features & Improvements
+- [ ] Add ability to specify the number of each type of potion a player has.
+- [ ] Add ability to adjust the number of light attack inputs in a combo.
+- [ ] Add ability to adjust the number of combo finisher inputs in a combo.
+- [ ] Add ability to toggle on/off the execution of each skill, in order to control which of skill slots (1-4) are used in the rotation.
+- [ ] Enhance held attack / held ability execution.
+  - [ ] Add ability to specify the number of seconds that light attack and combo finisher attack are held.
+  - [ ] Add ability to specify the number of seconds each skill is held.
+- [ ] Create `player profile` functionalities.
+  - [ ] Allow players to save and load their auto pilot settings.
+
 
 
