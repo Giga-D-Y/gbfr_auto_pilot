@@ -1,2 +1,5 @@
 /prerequisites
 /releases
+*.class
+*.ctxt
+*.bluej

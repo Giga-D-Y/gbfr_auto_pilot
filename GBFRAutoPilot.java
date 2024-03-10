@@ -30,7 +30,7 @@ import java.io.*;
 import java.beans.PropertyChangeListener;
 
 /* Main class declaration */
-public class GBFR_Auto_Pilot
+public class GBFRAutoPilot
 {
     /* Object declarations */
     Robot robot;
@@ -179,7 +179,7 @@ public class GBFR_Auto_Pilot
     int numRevivalPotion = -1;
     
     /* Constructor */
-    public GBFR_Auto_Pilot() {
+    public GBFRAutoPilot() {
         
         
         rand = new Random();
@@ -232,7 +232,7 @@ public class GBFR_Auto_Pilot
         
         /* Construct the main UI window and its components. */
         mainFrame = new JFrame();
-        mainFrame.setTitle("GBFR_Auto_Pilot For AFK Farming V2.4 - by Giga");
+        mainFrame.setTitle("GBFRAutoPilot For AFK Farming V2.4 - by Giga");
         mainFrame.setSize((int)windowWidth,(int)windowHeight);
         mainFrame.setLocation((int)windowLocationX, (int)windowLocationY);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -1596,6 +1596,6 @@ public class GBFR_Auto_Pilot
     }
     
     public static void main (String args[]) {
-        GBFR_Auto_Pilot mainWindow = new GBFR_Auto_Pilot();
+        GBFRAutoPilot mainWindow = new GBFRAutoPilot();
     }
 }
