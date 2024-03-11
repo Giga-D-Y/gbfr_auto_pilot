@@ -17,7 +17,7 @@
  * @author: Giga-D-Y
  * @version: 2.4
  * @created: 2024-02-20
- * @last_updated: 2024-03-03
+ * @last_updated: 2024-03-10
  */
 
 /* Library imports */
@@ -29,7 +29,12 @@ import java.awt.event.*;
 import java.io.*;
 import java.beans.PropertyChangeListener;
 
-/* Main class declaration */
+/**
+ * Main class declaration.
+ * 
+ * This program currently uses a single main class with a few sub-classes declared in-line.
+ * The sub-classes are primarily used to host the actions that are performed when listeners fire.
+ */
 public class GBFRAutoPilot
 {
     /* Object declarations */
@@ -178,15 +183,15 @@ public class GBFRAutoPilot
     int numMegaPotion = -1;
     int numRevivalPotion = -1;
     
-    /* Constructor */
+    /**
+     * Constructor.
+     * Initializes various objects and pre-sets the DefaultUIOptions.
+     */
     public GBFRAutoPilot() {
-        
-        
-        rand = new Random();
+        // rand = new Random();
         
         try {
             robot = new Robot();
-            //robot.setAutoDelay(rand.nextInt(200) + 100);
             robot.setAutoDelay(ROBOT_DEFAULT_AUTO_DELAY);
         } catch (Exception e) {
             System.out.println(e);
@@ -199,6 +204,10 @@ public class GBFRAutoPilot
         selectDefaultUIOptions();
     }
     
+    /**
+     * Initializes the Action Timer (used to fire the action scripts) 
+     * and the Pointer Timer (used to update the pixel information at the cursor).
+     */
     public void initTimers() {
         actionT = new javax.swing.Timer(100, new ActionListener(){
             public void actionPerformed(ActionEvent event) {
@@ -214,6 +223,10 @@ public class GBFRAutoPilot
         });
     }
     
+    /**
+     * Initializes various user interface elements.
+     * Constructs the main program window as well as the sub window(s).
+     */
     public void initInterface() {
         screenWidth = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         screenHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
@@ -521,6 +534,13 @@ public class GBFRAutoPilot
         mainFrame.setVisible(true);
     }
     
+    /**
+     * When any Check Box is interacted with, updates the state of other related Check Box(es) so that it's impossible to choose
+     * a combination of options that would result in non-supported configurations. For example, mutually exclusive options can not
+     * be selected at the same time.
+     * 
+     * @param {ItemEvent} e: the event object associated with the interaction.
+     */
     public void checkBoxClicked(ItemEvent e) {
         JCheckBox source = (JCheckBox)e.getItemSelectable();
         int selection = e.getStateChange();
@@ -582,6 +602,7 @@ public class GBFRAutoPilot
         } else if (source == panCameraCheckBox) {
             // Do nothing
         } else if (source == optimizeforSlimepedeCheckBox) {
+            // Optimizing for the Slimepede farm means that most of the combat related options will be disabled.
             if (selection == ItemEvent.SELECTED) {
                 if (!tapAttackCheckBox.isSelected() && !holdAttackCheckBox.isSelected()) {
                     tapAttackCheckBox.setSelected(true);
@@ -709,6 +730,9 @@ public class GBFRAutoPilot
         }    
     }
     
+    /**
+     * Pre-selects a few common UI options for the user, so that the user doesn't need to configure the program from scratch at launch.
+     */
     public void selectDefaultUIOptions() {
         moveForwardCheckBox.setSelected(true);
         tapAttackCheckBox.setSelected(true);
@@ -721,6 +745,9 @@ public class GBFRAutoPilot
         usePotionCheckBox.setSelected(true);
     }
     
+    /**
+     * Displays a popup dialog that will guide the user to capture on-screen pixels, used for various screen state detection.
+     */
     public void displayScreenDetectionPixelCaptureDialog() {
         int mainFrameLocationX = mainFrame.getLocation().x;
         int mainFrameLocationY = mainFrame.getLocation().y;
@@ -746,6 +773,9 @@ public class GBFRAutoPilot
         screenDetectionPixelCaptureDialog.setVisible(true);
     }
     
+    /**
+     * Reflect the color and coordinates of the pixel currently under the user's cursor.
+     */
     public void updateCurrentScreenPixel() {
         if (MouseInfo.getPointerInfo() == null || MouseInfo.getPointerInfo().getLocation() == null) {return;}
         currentScreenPixelX = MouseInfo.getPointerInfo().getLocation().x;
@@ -766,6 +796,9 @@ public class GBFRAutoPilot
             " | Pixel Color: r" + currentScreenPixelR + ", g" + currentScreenPixelG + ", b" + currentScreenPixelB);
     }
     
+    /**
+     * Capture the pixel that helps to determine whether the game is in the mission result screen.
+     */
     public void recordMissionResultPixel() {
         missionResultPixelX = MouseInfo.getPointerInfo().getLocation().x;
         missionResultPixelY = MouseInfo.getPointerInfo().getLocation().y;       
@@ -784,6 +817,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Capture the pixel that tells the program where the health bar of the player character is.
+     */
     public void recordHealthBarPixel() {
         healthBarPixelX = MouseInfo.getPointerInfo().getLocation().x;
         healthBarPixelY = MouseInfo.getPointerInfo().getLocation().y;       
@@ -801,6 +837,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Deletes the existing mission result pixel so that it can be re-captured.
+     */
     public void resetMissionResultPixel() {
         missionResultPixelColor = null;
         missionResultPixelX = -1;
@@ -818,6 +857,9 @@ public class GBFRAutoPilot
         missionResultPixelCaptureButton.setText(MISSION_RESULT_PIXEL_CAPTURE_BUTTON_TEXT);
     }
     
+    /**
+     * Deletes the existing health bar pixel so that it can be re-captured.
+     */
     public void resetHealthBarPixel() {
         healthBarPixelColor = null;
         healthBarPixelX = -1;
@@ -835,6 +877,12 @@ public class GBFRAutoPilot
         healthBarPixelCaptureButton.setText(HEALTH_BAR_PIXEL_CAPTURE_BUTTON_TEXT);
     }
     
+    /**
+     * Determines whether the captured mission result pixel is currently on the screen.
+     * The function uses some fuzzy math to account for slight variations of the pixel color that may be possible between capture time and run time.
+     * 
+     * @return {Boolean} true if the mission result pixel is on the screen.
+     */
     public boolean isMissionResultPixelOnScreen() {
         if (missionResultPixelRecordingOn || missionResultPixelColor == null || missionResultPixelX == -1 || missionResultPixelR == -1) {
             // screenIndicator.setText("ScreenState: Unknown");
@@ -872,6 +920,14 @@ public class GBFRAutoPilot
         return false;
     }
     
+    /**
+     * Determines whether the mission pop up window is currently on the screen.
+     * A pre-determined set of RGB values are used to identify this pop up. This is to avoid having the user capture yet another pixel, and this assumes that the color of this pixel is similar across different users.
+     * If bugs are reported on this feature, this function may need to require the user to capture the additional pixel, for higher accuracy.
+     * The function uses some fuzzy math to account for slight variations of the pixel color.
+     * 
+     * @return {Boolean} true if the mission result pop up is on the screen.
+     */
     public boolean isMissionResultPopUpOnScreen() {
         if (missionResultPopUpColor == null) {
             return false;
@@ -896,6 +952,19 @@ public class GBFRAutoPilot
         return false;
     }
     
+    /**
+     * Determines whether the game state is in the mission result screen.
+     * To improve accuracy, this function uses the following techniques:
+     * 1. Both the captured mission result pixel and the pre-determined mission result pop up pixel are used to make the initial determination. 
+     *    This is because when the pop up is visible, the screen is darkened and often times the captured mission result pixel is not able to be identified, and
+     *    the pop up pixel needs to be used.
+     * 2. If the health bar pixel is set, it should not be green or red when the mission result screen is showing.
+     * 
+     * Accuracy of this function is critical, since failure to identify the mission result screen will likely cause the program to send the user back to town,
+     * instead of continuing the AFK farm.
+     * 
+     * @return {Boolean} true if the game state is in the mission result screen.
+     */
     public boolean isInMissionResultScreen() {
         if (isMissionResultPixelOnScreen() || isMissionResultPopUpOnScreen()) {
             // If the health bar pixel is set, use it as a point of reference to make the decision.
@@ -911,6 +980,14 @@ public class GBFRAutoPilot
         return false;
     }
     
+    /**
+     * Determines whether the location at which the pixel was captured is showing a green pixel.
+     * The function uses some fuzzy math to improve accuracy.
+     * 
+     * Used typically to determine whether drinking a potion is needed.
+     * 
+     * @return {Boolean} true if the pixel is green.
+     */
     public boolean isHealthBarPixelGreen() {
         if (healthBarPixelRecordingOn || healthBarPixelColor == null || healthBarPixelX == -1 || healthBarPixelG == -1) {
             return true;
@@ -931,6 +1008,14 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Determines whether the location at which the pixel was captured is showing a red pixel.
+     * The function uses some fuzzy math to improve accuracy.
+     * 
+     * Used typically to determine if the player character is in the "critical" state.
+     * 
+     * @return {Boolean} true if the pixel is red.
+     */
     public boolean isHealthBarPixelRed() {
         if (healthBarPixelRecordingOn || healthBarPixelColor == null || healthBarPixelX == -1 || healthBarPixelR == -1) {
             return false;
@@ -951,6 +1036,10 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * A set of actions to be taken when the game is in the mission result screen.
+     * When the game asks the player whether they want to continue repeating the mission, the program should select "yes".
+     */
     public void missionResultScreenActions() {
         // Wait for a pop up to potentially show up before making any inputs.
         robot.delay(3000);        
@@ -986,6 +1075,12 @@ public class GBFRAutoPilot
         resetPotionsCount();
     }
     
+    /**
+     * Uses one or more of the remaining potions, if the health is below a threshold.
+     * The threshold is determined by checking whether the pixel color is green at the location of the health bar pixel.
+     * 
+     * If the health bar pixel is red, that means the player character is in the "critical" state and needs revival.
+     */
     public void usePotions() {
         if (usePotionCheckBox.isSelected()) {
             if (isHealthBarPixelRed() && numRevivalPotion > 0) {
@@ -1113,6 +1208,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Hold down the button for targeting, to toggle on the targeting system.
+     */
     public void holdTargeting() {        
         if (useTargetingCheckBox.isSelected()) {
             // Hold middle click on the mouse; used for toggle targetting.
@@ -1126,6 +1224,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Release the button for targeting, to toggle off the targeting system.
+     */
     public void releaseTargeting() {        
         if (useTargetingCheckBox.isSelected()) {
             // Release middle click on the mouse.
@@ -1139,6 +1240,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Pans the camera to the right. Typically useful when the boss moves a lot.
+     */
     public void panCamera() {
         if (panCameraCheckBox.isSelected()) {
             // Move the mouse to the right; used to pan the camera.                
@@ -1165,6 +1269,10 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Moves the player character forward.
+     * The distance moved is determined by the delay between button press and release.
+     */
     public void moveForward() {
         // Press and hold the "W" key; used for movement.
         if (moveForwardCheckBox.isSelected()) {
@@ -1187,6 +1295,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Executes several left clicks to do one or more light attacks.
+     */
     public void useLightAttacks() {
         // Left clicks on the mouse; used for attacking and confirming menu items.
         if (tapAttackCheckBox.isSelected()) {
@@ -1229,6 +1340,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Executes several right clicks to do one or more combo finisher attacks.
+     */
     public void useComboFinishers() {
         if (useCombosCheckBox.isSelected()) {
             // Right clicks on the mouse; used for comboing.
@@ -1267,6 +1381,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Executes player character skills in a rotation. The skill slot used changes every time this function gets called.
+     */
     public void useSkills() {
         // Presses the skill button then presses one of the skills; uses all 4 skills in a rotation.
         if (useSkillsCheckBox.isSelected()) {
@@ -1395,6 +1512,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Holds down the button that makes the player character guard.
+     */
     public void holdGuard() {
         // Press and hold the "Q" key to keep guarding. This key is not released until combat ends or when everything resets.
         if (holdGuardCheckBox.isSelected()) {
@@ -1407,6 +1527,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Makes the player character dodge every time this function is called.
+     */
     public void useDodge() {
         // Press the "E" key to dodge.
         if (keepDodgingCheckBox.isSelected()) {
@@ -1420,6 +1543,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Executes the link attack.
+     */
     public void useLinkAttack() {
         if (useLinkAttackCheckBox.isSelected()) {
             robot.keyPress(KeyEvent.VK_R);
@@ -1432,6 +1558,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Executes the SBA attack.
+     */
     public void useSBA() {
         if (useSBACheckBox.isSelected()) {
             robot.keyPress(KeyEvent.VK_G);
@@ -1444,6 +1573,10 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Attempts to recover the player character from the "critical" state, by
+     * either drinking a revival potion or spamming the Spacebar key.
+     */
     public void recoverFromCritical() {
         if (usePotionCheckBox.isSelected() && numRevivalPotion > 0) {
             usePotions();
@@ -1463,6 +1596,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Resets the internal count of how many potions are left.
+     */
     public void resetPotionsCount() {
         numGreenPotion = 8;
         numBluePotion = 6;
@@ -1470,6 +1606,11 @@ public class GBFRAutoPilot
         numRevivalPotion = 3;
     }
 
+    /**
+     * Main action script for a player character's in-combat actions.
+     * 
+     * The function should be idempotent, since it's called repeatedly by the Action Timer.
+     */
     public void actionTimerAction() {
         // The AfkFarm action
         if (functionSelector == AutoPilotFunctions.AFK_FARM) {
@@ -1547,6 +1688,9 @@ public class GBFRAutoPilot
         }
     }
     
+    /**
+     * Engages auto pilot when the AFK Farm button is pressed.
+     */
     public void afkFarmButtonPressed() {
         functionSelector = AutoPilotFunctions.AFK_FARM; // Selects the AfkFarm action
     
@@ -1559,6 +1703,13 @@ public class GBFRAutoPilot
     
     }
     
+    /**
+     * Determines whether the user has moved their mouse while the auto pilot is engaged.
+     * 
+     * @param {Integer} expectedX: x coordinate of the expected cursor position, if the user had not moved the mouse.
+     * @param {Integer} expectedY: y coordinate of the expected cursor position, if the user had not moved the mouse.
+     * @return {Boolean} true if the user has moved their mouse.
+     */
     public boolean hasMouseMoved(int expectedX, int expectedY) {
         mouseMovedThreshold = 10;
         
@@ -1569,6 +1720,10 @@ public class GBFRAutoPilot
         return false;
     }
     
+    /**
+     * Resets some of the global variables and disengages the auto pilot.
+     * This is typically called after hasMouseMoved() returned true.
+     */
     public void resetAll() {
         // Releases some of the keys that might have been pressed while the resetAll was called.
         robot.setAutoDelay(0);
@@ -1595,7 +1750,10 @@ public class GBFRAutoPilot
         // screenIndicator.setForeground(Color.GRAY);
     }
     
+    /**
+     * This is the start of the program's execution.
+     */
     public static void main (String args[]) {
-        GBFRAutoPilot mainWindow = new GBFRAutoPilot();
+        GBFRAutoPilot mainProgram = new GBFRAutoPilot();
     }
 }
